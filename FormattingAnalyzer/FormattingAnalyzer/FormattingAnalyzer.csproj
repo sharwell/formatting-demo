@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <LangVersion>7.2</LangVersion>
+    <CopyLocalLockFileDependencies>true</CopyLocalLockFileDependencies>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>FormattingAnalyzer</PackageId>
+    <PackageVersion>1.0.0.0</PackageVersion>
+    <Authors>sam</Authors>
+    <PackageLicenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</PackageLicenseUrl>
+    <PackageProjectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</PackageProjectUrl>
+    <PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>
+    <RepositoryUrl>http://REPOSITORY_URL_HERE_OR_DELETE_THIS_LINE</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>FormattingAnalyzer</Description>
+    <PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>
+    <Copyright>Copyright</Copyright>
+    <PackageTags>FormattingAnalyzer, analyzers</PackageTags>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_GetFilesToPackage</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.6.1" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.8.2" />
+    <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx" />
+    <EmbeddedResource Update="Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <Target Name="_GetFilesToPackage">
+    <ItemGroup>
+      <_File Include="$(OutputPath)$(AssemblyName).dll" />
+
+      <!-- Workspace layer dependencies -->
+      <_WorkspaceFile Include="$(OutputPath)Microsoft.VisualStudio.CodingConventions.dll"/>
+      <_WorkspaceFile Include="$(OutputPath)Microsoft.CodeAnalysis.Workspaces.dll"/>
+      <_WorkspaceFile Include="$(OutputPath)**\Microsoft.CodeAnalysis.Workspaces.resources.dll"/>
+      <_WorkspaceFile Include="$(OutputPath)Microsoft.CodeAnalysis.CSharp.Workspaces.dll"/>
+      <_WorkspaceFile Include="$(OutputPath)**\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll"/>
+
+      <!-- .NET Standard dependencies of the workspace layer -->
+      <_File Include="$(OutputPath)System.Composition.AttributedModel.dll"/>
+      <_File Include="$(OutputPath)System.Composition.Hosting.dll"/>
+      <_File Include="$(OutputPath)System.Composition.Runtime.dll"/>
+      <_File Include="$(OutputPath)System.Composition.TypedParts.dll"/>
+
+      <TfmSpecificPackageFile Include="@(_File)" PackagePath="analyzers/dotnet/cs/%(_File.RecursiveDir)%(_File.FileName)%(_File.Extension)" />
+      <TfmSpecificPackageFile Include="@(_WorkspaceFile)" PackagePath="analyzers/dotnet/workspace/%(_WorkspaceFile.RecursiveDir)%(_WorkspaceFile.FileName)%(_WorkspaceFile.Extension)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

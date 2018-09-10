@@ -1,0 +1,15 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+init:
+- git config --global core.autocrlf true
+before_build:
+- nuget restore
+build:
+  project: FormattingAnalyzer.sln
+  verbosity: minimal
+cache:
+  - packages -> **\packages.config
+  - C:\Users\appveyor\.nuget\packages -> appveyor.yml
+artifacts:
+- path: 'FormattingAnalyzer\**\*.vsix'
+- path: 'FormattingAnalyzer\**\*.nupkg'
